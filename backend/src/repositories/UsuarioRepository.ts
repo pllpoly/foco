@@ -1,7 +1,14 @@
-import { ResultSetHeader } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { pool } from "../config/database";
 import { ErroValidacao } from "../errors/ErroValidacao";
 import { Usuario } from "../models/Usuario";
+
+export interface UsuarioRegistro {
+  id: number;
+  nome: string;
+  email: string;
+  senha_hash: string;
+}
 
 export class UsuarioRepository {
   async criar(usuario: Usuario): Promise<number> {
@@ -21,5 +28,13 @@ export class UsuarioRepository {
       }
       throw erro;
     }
+  }
+
+    async buscarPorEmail(email: string): Promise<UsuarioRegistro | null> {
+    const [linhas] = await pool.execute<RowDataPacket[]>(
+      "SELECT id, nome, email, senha_hash FROM usuarios WHERE email = ?",
+      [email.trim().toLowerCase()]
+    );
+    return (linhas[0] as UsuarioRegistro) ?? null;
   }
 }

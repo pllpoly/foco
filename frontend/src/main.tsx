@@ -1,3 +1,5 @@
+import RotaProtegida from "./RotaProtegida";
+import Dashboard from "./Dashboard";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -11,6 +13,13 @@ createRoot(document.getElementById("root")!).render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/login" element={<Login />} />
+        <Route
+          path="/dashboard"
+          element={
+            <RotaProtegida>
+              <Dashboard />
+            </RotaProtegida>
+          }/>
       </Routes>
     </BrowserRouter>
   </StrictMode>

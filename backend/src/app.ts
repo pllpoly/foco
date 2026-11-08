@@ -1,3 +1,5 @@
+import { autenticar } from "./middlewares/autenticar";
+import { login } from "./controllers/AuthController";
 import cors from "cors";
 import express from "express";
 import { pool } from "./config/database";
@@ -18,3 +20,8 @@ app.get("/health", async (_req, res) => {
 });
 
 app.post("/usuarios", cadastrarUsuario);
+app.post("/login", login);
+
+app.get("/me", autenticar, (_req, res) => {
+  res.json({ usuarioId: res.locals.usuarioId });
+});
