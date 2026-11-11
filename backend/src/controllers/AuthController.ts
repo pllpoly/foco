@@ -1,3 +1,4 @@
+import { validarEmail } from "../utils/validadores";
 import { Request, Response } from "express";
 import { UsuarioRepository } from "../repositories/UsuarioRepository";
 import { verificarSenha } from "../utils/senha";
@@ -16,6 +17,11 @@ export async function login(req: Request, res: Response) {
       !senha
     ) {
       res.status(400).json({ erro: "Informe email e senha" });
+      return;
+    }
+
+     if (!validarEmail(email.trim())) {
+      res.status(400).json({ erro: "Email inválido" });
       return;
     }
 

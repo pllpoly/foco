@@ -1,3 +1,4 @@
+import { validarEmail } from "./validadores";
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -19,6 +20,11 @@ export default function Login() {
       return;
     }
 
+        if (!validarEmail(email)) {
+      setErro("Email inválido");
+      return;
+    }
+    
     setEnviando(true);
     try {
       const resposta = await fetch("http://localhost:3000/login", {

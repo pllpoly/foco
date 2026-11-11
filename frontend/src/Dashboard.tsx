@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { chamarApi } from "./api";
 
 export default function Dashboard() {
@@ -30,6 +30,8 @@ export default function Dashboard() {
         {sessaoValida === true && "Sessão confirmada pelo servidor ✅"}
         {sessaoValida === false && "Não foi possível confirmar a sessão"}
       </p>
+      <p><Link to="/materias">Minhas matérias</Link></p>
+      <p><Link to="/materias/nova">Cadastrar matéria</Link></p>
       <button onClick={sair}>Sair</button>
     </main>
   );

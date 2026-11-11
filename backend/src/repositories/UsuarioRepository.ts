@@ -10,6 +10,13 @@ export interface UsuarioRegistro {
   senha_hash: string;
 }
 
+export interface UsuarioPerfil {
+  id: number;
+  nome: string;
+  email: string;
+  cpf: string;
+}
+
 export class UsuarioRepository {
   async criar(usuario: Usuario): Promise<number> {
     const dados = usuario.paraPersistencia();
@@ -36,5 +43,31 @@ export class UsuarioRepository {
       [email.trim().toLowerCase()]
     );
     return (linhas[0] as UsuarioRegistro) ?? null;
+  }
+
+  async buscarPorId(id: number): Promise<UsuarioPerfil | null> {
+    const [linhas] = await pool.execute<RowDataPacket[]>(
+      "SELECT id, nome, email, cpf FROM usuarios WHERE id = ?",
+      [id]
+    );
+    return (linhas[0] as UsuarioPerfil) ?? null;
+  }
+
+  async atualizar(
+    id: number,
+    dados: { nome: string; cpf: string; senha_hash: string }
+  ): Promise<void> {
+    try {
+      await pool.execute(
+        "UPDATE usuarios SET nome = ?, cpf = ?, senha_hash = ? WHERE id = ?",
+        [dados.nome, dados.cpf, dados.senha_hash, id]
+      );
+    } catch (erro) {
+      const e = erro as { code?: string };
+      if (e.code === "ER_DUP_ENTRY") {
+        throw new ErroValidacao("CPF já cadastrado");
+      }
+      throw erro;
+    }
   }
 }

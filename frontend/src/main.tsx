@@ -1,3 +1,5 @@
+import Materias from "./Materias";
+import NovaMateria from "./NovaMateria";
 import RotaProtegida from "./RotaProtegida";
 import Dashboard from "./Dashboard";
 import { StrictMode } from "react";
@@ -19,8 +21,24 @@ createRoot(document.getElementById("root")!).render(
             <RotaProtegida>
               <Dashboard />
             </RotaProtegida>
+          } />
+
+        <Route
+          path="/materias"
+          element={
+            <RotaProtegida>
+              <Materias />
+            </RotaProtegida>
+          } />
+          
+        <Route
+          path="/materias/nova"
+          element={
+            <RotaProtegida>
+              <NovaMateria />
+            </RotaProtegida>
           }/>
-      </Routes>
+      </Routes>    
     </BrowserRouter>
   </StrictMode>
 );
