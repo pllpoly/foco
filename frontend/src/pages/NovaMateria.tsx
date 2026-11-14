@@ -1,7 +1,8 @@
+//cadastrar materia
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
-import { chamarApi } from "./api";
+import { chamarApi } from "../api";
 
 export default function NovaMateria() {
   const [nome, setNome] = useState("");

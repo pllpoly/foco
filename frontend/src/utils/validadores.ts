@@ -24,3 +24,19 @@ export function validarCpf(cpf: string): boolean {
     digito(d.slice(0, 10), 11) === Number(d[10])
   );
 }
+
+export type NivelSenha = "fraca" | "média" | "forte";
+
+export function nivelSenha(senha: string): NivelSenha {
+  const criterios = [
+    senha.length >= 8,
+    /[a-z]/.test(senha),
+    /[A-Z]/.test(senha),
+    /\d/.test(senha),
+    /[^A-Za-z0-9]/.test(senha),
+  ];
+  const pontos = criterios.filter(Boolean).length;
+  if (pontos <= 2) return "fraca";
+  if (pontos <= 4) return "média";
+  return "forte";
+}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { chamarApi } from "./api";
+import { chamarApi } from "../api";
 
 interface Materia {
   id: number;

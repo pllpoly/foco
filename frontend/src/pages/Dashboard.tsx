@@ -1,13 +1,13 @@
+//abre a caixa com useAuth e le o nome, prox telas abrem a mesma caixa dai
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { chamarApi } from "./api";
+import { chamarApi } from "../api";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { usuario, sair } = useAuth();
   const [sessaoValida, setSessaoValida] = useState<boolean | null>(null);
-
-  const texto = localStorage.getItem("usuario");
-  const usuario = texto ? JSON.parse(texto) : null;
 
   useEffect(() => {
     chamarApi("/me")
@@ -15,9 +15,8 @@ export default function Dashboard() {
       .catch(() => setSessaoValida(false));
   }, []);
 
-  function sair() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("usuario");
+  function aoSair() {
+    sair();
     navigate("/login");
   }
 
@@ -32,7 +31,8 @@ export default function Dashboard() {
       </p>
       <p><Link to="/materias">Minhas matérias</Link></p>
       <p><Link to="/materias/nova">Cadastrar matéria</Link></p>
-      <button onClick={sair}>Sair</button>
+      <p><Link to="/perfil">Meu perfil</Link></p>
+      <button onClick={aoSair}>Sair</button>
     </main>
   );
 }

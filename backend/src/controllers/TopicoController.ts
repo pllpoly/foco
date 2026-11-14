@@ -26,7 +26,7 @@ class TopicoController extends BaseController<Topico> {
     corpo: Record<string, unknown>,
     usuarioId: number
   ): Promise<Dados> {
-    const { titulo, materiaId, concluido } = corpo;
+    const { titulo, materiaId, concluido } = corpo; //aqui ele ta lendo o corpo do topico novo enviado pelo form
 
     if (typeof titulo !== "string" || titulo.trim().length < 2) {
       throw new ErroValidacao("O título deve ter pelo menos 2 caracteres");

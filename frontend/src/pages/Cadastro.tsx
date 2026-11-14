@@ -1,27 +1,16 @@
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import type { FormEvent, InputHTMLAttributes } from "react";
-import { validarCpf, validarEmail } from "./validadores";
+import type { FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { URL_API } from "../api";
+import Campo from "../components/Campo";
+import Mensagem from "../components/Mensagem";
+import { validarCpf, validarEmail } from "../utils/validadores";
 
 type Erros = Partial<
   Record<"nome" | "email" | "cpf" | "senha" | "confirmarSenha" | "api", string>
 >;
 
-function Campo({
-  rotulo,
-  erro,
-  ...props
-}: { rotulo: string; erro?: string } & InputHTMLAttributes<HTMLInputElement>) {
-  return (
-    <label style={{ display: "block", marginBottom: 12 }}>
-      {rotulo}
-      <input {...props} style={{ display: "block", width: "100%" }} />
-      {erro && <small style={{ color: "crimson" }}>{erro}</small>}
-    </label>
-  );
-}
-
-export default function App() {
+export default function Cadastro() {
   const navigate = useNavigate();
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
@@ -49,7 +38,7 @@ export default function App() {
 
     setEnviando(true);
     try {
-      const resposta = await fetch("http://localhost:3000/usuarios", {
+      const resposta = await fetch(`${URL_API}/usuarios`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nome, email, cpf, senha }),
@@ -60,7 +49,7 @@ export default function App() {
         setErros({ api: dados.erro ?? "Erro ao cadastrar" });
         return;
       }
-      navigate("/login", { state: { cadastrado: true } }); // vamos trocar por redirecionamento
+      navigate("/login", { state: { cadastrado: true } });
     } catch {
       setErros({ api: "Não foi possível conectar ao servidor" });
     } finally {
@@ -84,14 +73,15 @@ export default function App() {
           erro={erros.confirmarSenha}
           onChange={(e) => setConfirmarSenha(e.target.value)} />
 
-        {erros.api && (
-          <p style={{ color: "crimson" }}>{erros.api}</p>
-        )}
+        <Mensagem tipo="erro" texto={erros.api ?? ""} />
 
         <button type="submit" disabled={enviando}>
           {enviando ? "Enviando..." : "Cadastrar"}
         </button>
       </form>
+      <p>
+        Já tem conta? <Link to="/login">Entrar</Link>
+      </p>
     </main>
   );
 }

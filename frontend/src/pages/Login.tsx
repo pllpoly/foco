@@ -1,15 +1,23 @@
-import { validarEmail } from "./validadores";
+//chama entrar e coloca usuario na caixa
+import { useAuth } from "../contexts/AuthContext";
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { URL_API } from "../api";
+import Campo from "../components/Campo";
+import Mensagem from "../components/Mensagem";
+import { validarEmail } from "../utils/validadores";
 
 export default function Login() {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("");//useState quando o site abre, a caixa ja nasce com o usuario que estava no localStorage, por isso atualizar a pag nao desloga ninguem
+
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
   const [enviando, setEnviando] = useState(false);
+
+  const { entrar: registrarLogin } = useAuth();
 
   async function entrar(evento: FormEvent) {
     evento.preventDefault();
@@ -19,15 +27,14 @@ export default function Login() {
       setErro("Informe email e senha");
       return;
     }
-
-        if (!validarEmail(email)) {
+    if (!validarEmail(email)) {
       setErro("Email inválido");
       return;
     }
-    
+
     setEnviando(true);
     try {
-      const resposta = await fetch("http://localhost:3000/login", {
+      const resposta = await fetch(`${URL_API}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, senha }),
@@ -39,8 +46,8 @@ export default function Login() {
         return;
       }
 
-      localStorage.setItem("token", dados.token);
-      localStorage.setItem("usuario", JSON.stringify(dados.usuario));
+      registrarLogin(dados.token, dados.usuario);
+
       navigate("/dashboard");
     } catch {
       setErro("Não foi possível conectar ao servidor");
@@ -54,30 +61,16 @@ export default function Login() {
       <h1>Login</h1>
 
       {state?.cadastrado && (
-        <p style={{ color: "green" }}>Cadastro realizado! Faça seu login.</p>
+        <Mensagem tipo="sucesso" texto="Cadastro realizado! Faça seu login." />
       )}
 
       <form onSubmit={entrar} noValidate>
-        <label style={{ display: "block", marginBottom: 12 }}>
-          Email
-          <input
-            style={{ display: "block", width: "100%" }}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </label>
+        <Campo rotulo="Email" value={email}
+          onChange={(e) => setEmail(e.target.value)} />
+        <Campo rotulo="Senha" type="password" value={senha}
+          onChange={(e) => setSenha(e.target.value)} />
 
-        <label style={{ display: "block", marginBottom: 12 }}>
-          Senha
-          <input
-            style={{ display: "block", width: "100%" }}
-            type="password"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-          />
-        </label>
-
-        {erro && <p style={{ color: "crimson" }}>{erro}</p>}
+        <Mensagem tipo="erro" texto={erro} />
 
         <button type="submit" disabled={enviando}>
           {enviando ? "Entrando..." : "Entrar"}

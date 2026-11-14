@@ -1,3 +1,5 @@
+//valida o nome (tamanho, tipo) e entrega os dados limpos ao repository
+
 import { ErroValidacao } from "../errors/ErroValidacao";
 import { Dados } from "../repositories/BaseRepository";
 import { Materia, MateriaRepository } from "../repositories/MateriaRepository";

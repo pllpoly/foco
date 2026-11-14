@@ -12,7 +12,7 @@ import {
   editarUsuario,
   verPerfil,
 } from "./controllers/UsuarioController";
-import { registrarCrud } from "./routes/crud";
+import { registrarCrud } from "./routes/crud"; //escreve lista de combinacoes 'se chegar tal pedido chame tal funcao', ele escreve a lista a partir do momento que a api liga, nao quando o pedido chega
 
 export const app = express();
 
@@ -38,7 +38,7 @@ app.get("/me", autenticar, (_req, res) => {
 app.get("/usuarios/me", autenticar, verPerfil);
 app.put("/usuarios/:id", autenticar, editarUsuario);
 
-registrarCrud(app, "/materias", materiaController);
+registrarCrud(app, "/materias", materiaController); //aqui a materia é escrita, ele escreve os pedidos de materias e aponta para o MateriaController
 registrarCrud(app, "/topicos", topicoController);
 registrarCrud(app, "/sessoes", sessaoController);
 registrarCrud(app, "/metas", metaController);
