@@ -1,5 +1,5 @@
 //monta o pedido de nova materia e coloca token no cabecalho
-export const URL_API = "http://localhost:3000";// quando maria salva a materia o navegador manda o pedido para esse endereco
+export const URL_API: string = import.meta.env.VITE_API_URL ?? "http://localhost:3000";// quando maria salva a materia o navegador manda o pedido para esse endereco
 
 export async function chamarApi(caminho: string, opcoes: RequestInit = {}) {
   const token = localStorage.getItem("token");//token
