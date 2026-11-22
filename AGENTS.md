@@ -3,7 +3,10 @@
 Aplicação web para organizar estudos: matérias, tópicos, sessões de estudo
 (leitura, exercício e revisão) e metas semanais.
 
-Persona: (preencha com a persona/cliente do seu projeto)
+Persona: estudante universitário que quer organizar melhor o tempo dedicado aos
+estudos da faculdade. Ele precisa ver quantas horas estudou por matéria e por
+semana, comparar com as metas e registrar as sessões de estudo (leitura,
+exercício e revisão).
 
 ## Stack
 - Back-end: Node 20+, Express, TypeScript, MySQL (mysql2), JWT
