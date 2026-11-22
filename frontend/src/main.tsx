@@ -16,7 +16,7 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <Routes>
+        <Routes>Refatoração: services e controllers finos; telas genéricas dos CRUDs"
           <Route path="/" element={<Cadastro />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<RotaProtegida><Dashboard /></RotaProtegida>} />
