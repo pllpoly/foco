@@ -1,34 +1,49 @@
 # Foco: planner de estudos
 
-Aplicação web para organizar estudos: matérias, tópicos, sessões de estudo
-(leitura, exercício e revisão) e metas semanais.
+Aplicação web para organizar o tempo de estudo da faculdade: matérias, tópicos,
+sessões de estudo (leitura, exercício e revisão) e metas semanais.
 
-Persona: estudante universitário que quer organizar melhor o tempo dedicado aos
-estudos da faculdade. Ele precisa ver quantas horas estudou por matéria e por
-semana, comparar com as metas e registrar as sessões de estudo (leitura,
-exercício e revisão).
+Persona: estudante universitário que quer organizar melhor o tempo dedicado aos estudos da faculdade e gostaria de uma forma prática e funcional de ter esse controle. Ele precisa ver quantas horas estudou por matéria e por semana, comparar com as metas e registrar as sessões de estudo.
 
 ## Stack
 - Back-end: Node 20+, Express, TypeScript, MySQL (mysql2), JWT
 - Front-end: React + TypeScript (Vite) e react-router-dom
-- Infra: Docker Compose (MySQL, API, front e Nginx)
+- Infra: Docker Compose (MySQL, API, front e Nginx como proxy reverso)
 
-## Estrutura
-- backend/src: config, controllers, repositories, models, errors, middlewares, routes, utils
-- frontend/src: pages, components, contexts e api.ts
+## Arquitetura do back-end
+Fluxo de um pedido: rota, controller, service, model, repository, banco.
+- `controllers/`: só HTTP. Lê o pedido, chama o service e devolve o status.
+  Herdam de `BaseController`.
+- `services/`: regras que envolvem mais de uma coisa (por exemplo, conferir que
+  a matéria pertence ao usuário). Herdam de `BaseService`.
+- `models/`: entidades com campos privados `#`, `get`/`set` só quando há regra e
+  o método `paraPersistencia()`.
+- `repositories/`: só SQL, sempre com placeholders `?`. Herdam de `BaseRepository`.
+- `errors/`: `ErroValidacao` (resposta 400) e `ErroNaoEncontrado` (resposta 404).
+- `middlewares/`: `autenticar` confere o token JWT.
+- `routes/`: `registrarCrud` liga as 5 rotas de cada recurso.
+
+## Nomenclatura
+- TypeScript em camelCase; classes em PascalCase.
+- snake_case somente nas colunas do banco e nas interfaces `XRegistro`, que
+  descrevem uma linha do banco.
+- `XRegistro` é a linha do banco; a classe `X` é a entidade com as regras.
 
 ## Comandos
-- Banco: `docker compose up -d db` (na raiz)
-- API: `npm run dev` em backend/ (precisa de DB_PASSWORD no ambiente)
-- Front: `npm run dev` em frontend/
+- Tudo no ar: `docker compose up -d --build` na raiz; conferir com `docker compose ps`.
+- Site: http://localhost:8080 (somente o Nginx tem porta aberta).
+- Banco no DBeaver (porta 3307, só local):
+  `docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d db`.
+- Compilar para conferir tipos: `npm run build` em backend/ ou frontend/.
 
 ## Convenções de código
-- TypeScript estrito. Nunca usar `any`.
-- Campos privados com `#`. Getters e setters só quando houver regra ou transformação.
-- Erro causado pelo usuário: lançar `ErroValidacao` (resposta 400).
+- TypeScript estrito. Nunca usar `any`. Sem arquivos `.js` no projeto.
 - Todo SQL usa placeholders `?`. Nunca concatenar valores do usuário.
-- Toda rota de dados passa por `autenticar`. O dono do dado vem de `res.locals.usuarioId`, nunca do corpo.
-- Novos CRUDs herdam de `BaseRepository` e `BaseController` (skill `novo-crud`).
+- Toda rota de dados passa por `autenticar`. O dono do dado vem de
+  `res.locals.usuarioId`, nunca do corpo do pedido.
+- Erro causado pelo usuário: lançar `ErroValidacao`. Recurso inexistente ou de
+  outro usuário: lançar `ErroNaoEncontrado`.
+- Novos CRUDs seguem o padrão de `Materia` (skill `novo-crud`).
 - Textos de erro e mensagens em português.
 
 ## Guardrails (limites do agente)

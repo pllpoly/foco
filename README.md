@@ -95,10 +95,11 @@ Dentro do Docker, a API fica em `/api` (por exemplo, `/api/materias`).
 ```
 backend/src
   config/        conexão com o banco
-  controllers/   camada HTTP
-  repositories/  acesso ao banco (BaseRepository genérico)
-  models/        entidades (Usuario, Sessao e subclasses)
-  errors/        erros customizados (ErroValidacao)
+  controllers/   camada HTTP (herdam de BaseController)
+  services/      regras de negócio (herdam de BaseService)
+  models/        entidades (Usuario, Materia, Topico, Meta, Sessao)
+  repositories/  acesso ao banco (herdam de BaseRepository)
+  errors/        ErroValidacao e ErroNaoEncontrado
   middlewares/   autenticação por token
   routes/        registro das rotas dos CRUDs
   utils/         validadores, senha e token
@@ -136,7 +137,8 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d db
   arquivos curtos
 - `Sessao` é uma classe abstrata, e cada tipo (`Leitura`, `Exercicio`,
   `Revisao`) calcula os próprios pontos (polimorfismo)
-
+- Camadas com responsabilidade única: controller (HTTP), service (regras),
+  model (entidade com campos privados) e repository (SQL)
 ## Prints de evidência
 
 //
