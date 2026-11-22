@@ -1,35 +1,22 @@
 import { Request, Response } from "express";
+import { ErroNaoEncontrado } from "../errors/ErroNaoEncontrado";
 import { ErroValidacao } from "../errors/ErroValidacao";
-import { BaseRepository, Dados } from "../repositories/BaseRepository";
-
-interface Textos {
-  naoEncontrado: string;
-  duplicado: string;
-}
+import { BaseService } from "../services/BaseService";
 
 export abstract class BaseController<T extends { id: number }> {
-  constructor(
-    protected readonly repositorio: BaseRepository<T>,
-    protected readonly textos: Textos
-  ) {}
-
-  protected abstract validar(
-    corpo: Record<string, unknown>,
-    usuarioId: number
-  ): Promise<Dados>;
+  constructor(protected readonly servico: BaseService<T>) {}
 
   protected filtros(_req: Request): Record<string, number> {
     return {};
   }
 
-  private tratarErro(erro: unknown, res: Response) {
+  private responderErro(erro: unknown, res: Response) {
     if (erro instanceof ErroValidacao) {
       res.status(400).json({ erro: erro.message });
       return;
     }
-    const e = erro as { code?: string };
-    if (e.code === "ER_DUP_ENTRY") {
-      res.status(400).json({ erro: this.textos.duplicado });
+    if (erro instanceof ErroNaoEncontrado) {
+      res.status(404).json({ erro: erro.message });
       return;
     }
     console.error(erro);
@@ -49,7 +36,7 @@ export abstract class BaseController<T extends { id: number }> {
       const usuarioId = res.locals.usuarioId as number;
       const pagina = Number(req.query.pagina) || 1;
       const limite = Number(req.query.limite) || 10;
-      const itens = await this.repositorio.listar(
+      const itens = await this.servico.listar(
         usuarioId,
         pagina,
         limite,
@@ -57,32 +44,26 @@ export abstract class BaseController<T extends { id: number }> {
       );
       res.json({ pagina, limite, itens });
     } catch (erro) {
-      this.tratarErro(erro, res);
+      this.responderErro(erro, res);
     }
   };
 
   buscar = async (req: Request, res: Response) => {
     try {
       const usuarioId = res.locals.usuarioId as number;
-      const item = await this.repositorio.buscarPorId(this.lerId(req), usuarioId);
-      if (!item) {
-        res.status(404).json({ erro: this.textos.naoEncontrado });
-        return;
-      }
-      res.json(item);
+      res.json(await this.servico.buscar(this.lerId(req), usuarioId));
     } catch (erro) {
-      this.tratarErro(erro, res);
+      this.responderErro(erro, res);
     }
   };
 
   criar = async (req: Request, res: Response) => {
     try {
       const usuarioId = res.locals.usuarioId as number;
-      const dados = await this.validar(req.body ?? {}, usuarioId);
-      const id = await this.repositorio.criar(usuarioId, dados);
+      const id = await this.servico.criar(req.body ?? {}, usuarioId);
       res.status(201).json({ id });
     } catch (erro) {
-      this.tratarErro(erro, res);
+      this.responderErro(erro, res);
     }
   };
 
@@ -90,29 +71,20 @@ export abstract class BaseController<T extends { id: number }> {
     try {
       const usuarioId = res.locals.usuarioId as number;
       const id = this.lerId(req);
-      const dados = await this.validar(req.body ?? {}, usuarioId);
-      const atualizado = await this.repositorio.atualizar(id, usuarioId, dados);
-      if (!atualizado) {
-        res.status(404).json({ erro: this.textos.naoEncontrado });
-        return;
-      }
+      await this.servico.atualizar(id, req.body ?? {}, usuarioId);
       res.json({ id });
     } catch (erro) {
-      this.tratarErro(erro, res);
+      this.responderErro(erro, res);
     }
   };
 
   excluir = async (req: Request, res: Response) => {
     try {
       const usuarioId = res.locals.usuarioId as number;
-      const excluido = await this.repositorio.excluir(this.lerId(req), usuarioId);
-      if (!excluido) {
-        res.status(404).json({ erro: this.textos.naoEncontrado });
-        return;
-      }
+      await this.servico.excluir(this.lerId(req), usuarioId);
       res.status(204).send();
     } catch (erro) {
-      this.tratarErro(erro, res);
+      this.responderErro(erro, res);
     }
   };
 }
