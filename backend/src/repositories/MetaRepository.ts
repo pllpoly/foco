@@ -1,6 +1,6 @@
 import { BaseRepository } from "./BaseRepository";
 
-export interface Meta {
+export interface MetaRegistro {
   id: number;
   usuario_id: number;
   materia_id: number;
@@ -9,7 +9,7 @@ export interface Meta {
   criado_em: Date;
 }
 
-export class MetaRepository extends BaseRepository<Meta> {
+export class MetaRepository extends BaseRepository<MetaRegistro> {
   constructor() {
     super("metas", ["materia_id", "minutos_semanais", "ativa"]);
   }

@@ -1,10 +1,11 @@
 import { ErroValidacao } from "../errors/ErroValidacao";
+import { Meta } from "../models/Meta";
 import { Dados } from "../repositories/BaseRepository";
 import { MateriaRepository } from "../repositories/MateriaRepository";
-import { Meta, MetaRepository } from "../repositories/MetaRepository";
+import { MetaRegistro, MetaRepository } from "../repositories/MetaRepository";
 import { BaseService } from "./BaseService";
 
-export class MetaService extends BaseService<Meta> {
+export class MetaService extends BaseService<MetaRegistro> {
   private readonly materias = new MateriaRepository();
 
   constructor() {
@@ -20,32 +21,23 @@ export class MetaService extends BaseService<Meta> {
   ): Promise<Dados> {
     const { materiaId, minutosSemanais, ativa } = corpo;
 
-    if (typeof materiaId !== "number" || !Number.isInteger(materiaId)) {
+    if (typeof materiaId !== "number") {
       throw new ErroValidacao("Informe a matéria da meta");
     }
-    if (
-      typeof minutosSemanais !== "number" ||
-      !Number.isInteger(minutosSemanais) ||
-      minutosSemanais < 10 ||
-      minutosSemanais > 3000
-    ) {
-      throw new ErroValidacao(
-        "Os minutos semanais devem ser um número inteiro entre 10 e 3000"
-      );
+    if (typeof minutosSemanais !== "number") {
+      throw new ErroValidacao("Informe os minutos semanais");
     }
     if (ativa !== undefined && typeof ativa !== "boolean") {
       throw new ErroValidacao("O campo ativa deve ser verdadeiro ou falso");
     }
+
+    const meta = new Meta(materiaId, minutosSemanais, ativa);
 
     const materia = await this.materias.buscarPorId(materiaId, usuarioId);
     if (!materia) {
       throw new ErroValidacao("Matéria não encontrada");
     }
 
-    return {
-      materia_id: materiaId,
-      minutos_semanais: minutosSemanais,
-      ativa: ativa === undefined ? undefined : ativa ? 1 : 0,
-    };
+    return meta.paraPersistencia();
   }
 }

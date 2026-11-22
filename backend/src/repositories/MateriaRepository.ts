@@ -1,6 +1,6 @@
 import { BaseRepository } from "./BaseRepository";
 
-export interface Materia {
+export interface MateriaRegistro {
   id: number;
   usuario_id: number;
   nome: string;
@@ -8,7 +8,7 @@ export interface Materia {
   criado_em: Date;
 }
 
-export class MateriaRepository extends BaseRepository<Materia> {
+export class MateriaRepository extends BaseRepository<MateriaRegistro> {
   constructor() {
     super("materias", ["nome", "descricao"]);
   }

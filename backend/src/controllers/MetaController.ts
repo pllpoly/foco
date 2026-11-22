@@ -1,9 +1,9 @@
 import { Request } from "express";
-import { Meta } from "../repositories/MetaRepository";
+import { MetaRegistro } from "../repositories/MetaRepository";
 import { MetaService } from "../services/MetaService";
 import { BaseController } from "./BaseController";
 
-class MetaController extends BaseController<Meta> {
+class MetaController extends BaseController<MetaRegistro> {
   constructor() {
     super(new MetaService());
   }

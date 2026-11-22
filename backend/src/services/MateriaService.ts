@@ -1,9 +1,10 @@
 import { ErroValidacao } from "../errors/ErroValidacao";
+import { Materia } from "../models/Materia";
 import { Dados } from "../repositories/BaseRepository";
-import { Materia, MateriaRepository } from "../repositories/MateriaRepository";
+import { MateriaRegistro, MateriaRepository } from "../repositories/MateriaRepository";
 import { BaseService } from "./BaseService";
 
-export class MateriaService extends BaseService<Materia> {
+export class MateriaService extends BaseService<MateriaRegistro> {
   constructor() {
     super(new MateriaRepository(), {
       naoEncontrado: "Matéria não encontrada",
@@ -14,22 +15,13 @@ export class MateriaService extends BaseService<Materia> {
   protected async montar(corpo: Record<string, unknown>): Promise<Dados> {
     const { nome, descricao } = corpo;
 
-    if (typeof nome !== "string" || nome.trim().length < 2) {
-      throw new ErroValidacao("O nome da matéria deve ter pelo menos 2 caracteres");
-    }
-    if (nome.trim().length > 100) {
-      throw new ErroValidacao("O nome da matéria deve ter no máximo 100 caracteres");
+    if (typeof nome !== "string") {
+      throw new ErroValidacao("Informe o nome da matéria");
     }
     if (descricao != null && typeof descricao !== "string") {
       throw new ErroValidacao("A descrição deve ser um texto");
     }
-    if (typeof descricao === "string" && descricao.trim().length > 255) {
-      throw new ErroValidacao("A descrição deve ter no máximo 255 caracteres");
-    }
 
-    return {
-      nome: nome.trim(),
-      descricao: typeof descricao === "string" ? descricao.trim() || null : null,
-    };
+    return new Materia(nome, descricao ?? null).paraPersistencia();
   }
 }

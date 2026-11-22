@@ -1,9 +1,9 @@
 import { Request } from "express";
-import { Topico } from "../repositories/TopicoRepository";
+import { TopicoRegistro } from "../repositories/TopicoRepository";
 import { TopicoService } from "../services/TopicoService";
 import { BaseController } from "./BaseController";
 
-class TopicoController extends BaseController<Topico> {
+class TopicoController extends BaseController<TopicoRegistro> {
   constructor() {
     super(new TopicoService());
   }
