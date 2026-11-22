@@ -54,9 +54,9 @@ export async function editarUsuario(req: Request, res: Response) {
 
     const { nome, email, cpf, senha } = req.body ?? {};
 
-    const campos = [nome, cpf, senha];
+    const campos = [nome, email, cpf, senha];
     if (campos.some((c) => typeof c !== "string" || c.trim() === "")) {
-      throw new ErroValidacao("Preencha nome, CPF e senha");
+      throw new ErroValidacao("Preencha nome, email, CPF e senha");
     }
 
     const atual = await repositorio.buscarPorId(usuarioId);
@@ -65,10 +65,7 @@ export async function editarUsuario(req: Request, res: Response) {
       return;
     }
 
-    if (
-      email !== undefined &&
-      (typeof email !== "string" || email.trim().toLowerCase() !== atual.email)
-    ) {
+    if (email.trim().toLowerCase() !== atual.email) {
       throw new ErroValidacao("Não é permitido alterar o email");
     }
 

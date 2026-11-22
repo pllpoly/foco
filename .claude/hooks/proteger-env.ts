@@ -1,8 +1,14 @@
 let entrada = "";
-process.stdin.on("data", (pedaco) => (entrada += pedaco));
+
+process.stdin.on("data", (pedaco: Buffer) => {
+  entrada += pedaco.toString();
+});
+
 process.stdin.on("end", () => {
   try {
-    const dados = JSON.parse(entrada);
+    const dados = JSON.parse(entrada) as {
+      tool_input?: { file_path?: string; command?: string };
+    };
     const alvo = String(
       dados.tool_input?.file_path ?? dados.tool_input?.command ?? ""
     );
