@@ -1,7 +1,11 @@
 import type { ReactNode } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { recursos } from "../config/recursos";
 import { useAuth } from "../contexts/AuthContext";
+
+function classeMenu({ isActive }: { isActive: boolean }) {
+  return isActive ? "ativo" : undefined;
+}
 
 export default function Layout({ titulo, children }: { titulo: string; children: ReactNode }) {
   const { usuario, sair } = useAuth();
@@ -13,32 +17,29 @@ export default function Layout({ titulo, children }: { titulo: string; children:
   }
 
   return (
-    <div>
-      <header
-        style={{
-          display: "flex",
-          gap: 16,
-          alignItems: "center",
-          flexWrap: "wrap",
-          padding: "12px 24px",
-          borderBottom: "1px solid #ccc",
-        }}
-      >
-        <strong>Foco</strong>
-        <nav style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-          <Link to="/dashboard">Início</Link>
+    <div className="pagina">
+      <header className="topo">
+        <span className="marca">Foco</span>
+        <nav className="menu">
+          <NavLink to="/dashboard" className={classeMenu}>
+            Dashboard
+          </NavLink>
           {recursos.map((r) => (
-            <Link key={r.caminho} to={r.caminho}>
+            <NavLink key={r.caminho} to={r.caminho} className={classeMenu}>
               {r.titulo}
-            </Link>
+            </NavLink>
           ))}
-          <Link to="/perfil">Perfil</Link>
+          <NavLink to="/perfil" className={classeMenu}>
+            Perfil
+          </NavLink>
         </nav>
-        <span style={{ marginLeft: "auto" }}>Olá, {usuario?.nome}</span>
-        <button onClick={aoSair}>Sair</button>
+        <div className="usuario">
+          <span>Olá, {usuario?.nome}</span>
+          <button onClick={aoSair}>Sair</button>
+        </div>
       </header>
 
-      <main style={{ maxWidth: 800, margin: "24px auto", padding: "0 16px" }}>
+      <main className="conteudo">
         <h1>{titulo}</h1>
         {children}
       </main>
